@@ -14,7 +14,7 @@ class ChecklistCollection extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $data = [
             'type'       => 'checklists',
             'id'         => $this->id,
             'attributes' => [
@@ -32,5 +32,13 @@ class ChecklistCollection extends JsonResource
             ],
             'links'      => ['self' => route('checklists.detail', ['id' => $this->id])]
         ];
+        
+        if ($include = $request->input('include')) {
+            if ($include == 'items') {
+                $data['attributes']['items'] = $this->items;
+            }
+        }
+        
+        return $data;
     }
 }
