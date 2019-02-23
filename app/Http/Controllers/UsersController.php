@@ -31,9 +31,9 @@ class UsersController extends Controller
             $apikey = base64_encode(str_random(40));
             Users::where('email', $request->input('email'))->update(['api_key' => "$apikey"]);;
             
-            return response()->json(['status' => 'success', 'api_key' => $apikey]);
+            return response()->json(['status' => 200, 'message' => 'success', 'api_key' => $apikey]);
         } else {
-            return response()->json(['status' => 'fail'], 401);
+            return response()->json(['status' => 401, 'message' => 'fail'], 401);
         }
     }
 }
