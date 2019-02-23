@@ -107,14 +107,14 @@ class TemplateController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int     $id
+     * @param  int     $template_id
      * @param Template $model
      * @return \Illuminate\Http\Response
      */
-    public function delete($id, Template $model)
+    public function delete($template_id, Template $model)
     {
-        if ($d = $model->find($id)) {
-            if ($model->destroy($id)) {
+        if ($d = $model->find($template_id)) {
+            if ($model->destroy($template_id)) {
                 return response()->json(['status' => '204']);
             }
             
