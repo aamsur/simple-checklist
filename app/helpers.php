@@ -15,7 +15,7 @@ if (!function_exists('ddd')) {
 }
 
 /**
- * Get current use loggedin
+ * Get current user logged in
  *
  * @return mixed
  */

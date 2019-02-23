@@ -8,15 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Checklist extends Model
 {
     protected $table    = 'checklist';
-    
-    //
     protected $fillable = ['object_domain', 'object_id', 'description', 'completed_at', 'urgency', 'due', 'created_by', 'updated_by'];
-    protected $casts = [
+    protected $casts    = [
         'created_at'   => 'date:Y-m-d\TH:i:sP',
         'updated_at'   => 'datetime:Y-m-d\TH:i:sP',
         'completed_at' => 'datetime:Y-m-d\TH:i:sP',
     ];
-
+    
     /**
      * @param  string $value
      * @return void
