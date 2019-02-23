@@ -29,6 +29,12 @@ class ChecklistController extends Controller
      */
     public function index(Request $request, Checklist $model)
     {
+        $page_limit  = $request->input('page_limit') ?: 10;
+        $page_offset = $request->input('page_offset') ?: 0;
+        $page        = ceil($page_offset / $page_limit);
+        
+        $request->merge(['page' => $page]);
+        
         if ($sort = $request->input('sort')) {
             $model = $model->orderby($sort);
         }
@@ -37,15 +43,22 @@ class ChecklistController extends Controller
             $model = $model->select(explode('|', $fields));
         }
         
-        if ($data = $model->get()) {
+        if ($data = $model->paginate($page_limit)) {
             $data->transform(function ($d) {
                 return new ChecklistCollection($d);
             });
             
-            $total = $model->count();
-            $count = count($data);
+            $data->appends($_GET)->links();
             
-            $links = [];
+            $array_data = $data->toArray();
+            $total      = $data->total();
+            $count      = $data->count();
+            $links      = [
+                'first' => $array_data['first_page_url'],
+                'last'  => $array_data['last_page_url'],
+                'next'  => $array_data['next_page_url'],
+                'prev'  => $array_data['prev_page_url'],
+            ];
             
             $result = array(
                 'meta'  => array(
@@ -53,7 +66,7 @@ class ChecklistController extends Controller
                     'count' => $count,
                 ),
                 'links' => $links,
-                'data'  => $data,
+                'data'  => $data->items(),
             );
             
             return response()->json($result);

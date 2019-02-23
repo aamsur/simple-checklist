@@ -34,7 +34,7 @@ class TemplateCollection extends JsonResource
                 'created_at' => $this->created_at->format(\DateTime::RFC3339),
                 'items'      => $this->items,
             ],
-            'links'      => ['self' => route('checklists.detail', ['id' => $this->id])]
+            'links'      => ['self' => route('checklists.template.detail', ['template_id' => $this->id])]
         ];
         
         return $data;

@@ -32,6 +32,12 @@ class TemplateController extends Controller
      */
     public function index(Request $request, Template $model)
     {
+        $page_limit  = $request->input('page_limit') ?: 10;
+        $page_offset = $request->input('page_offset') ?: 0;
+        $page        = ceil($page_offset / $page_limit);
+        
+        $request->merge(['page' => $page]);
+        
         if ($sort = $request->input('sort')) {
             $model = $model->orderby($sort);
         }
@@ -39,23 +45,31 @@ class TemplateController extends Controller
         if ($fields = $request->input('fields')) {
             $model = $model->select(explode('|', $fields));
         }
-        $data = $model->get();
+        $data = $model->paginate($page_limit);
         if ($total = $model->count()) {
             $data->transform(function ($d) {
                 return new TemplateCollection($d);
             });
             
-            $count = count($data);
-            
-            $links = [];
+            $data->appends($_GET)->links();
+    
+            $array_data = $data->toArray();
+            $total      = $data->total();
+            $count      = $data->count();
+            $links      = [
+                'first' => $array_data['first_page_url'],
+                'last'  => $array_data['last_page_url'],
+                'next'  => $array_data['next_page_url'],
+                'prev'  => $array_data['prev_page_url'],
+            ];
             
             $result = array(
-                'meta'  => array(
+                'meta' => array(
                     'total' => $total,
                     'count' => $count,
                 ),
                 'links' => $links,
-                'data'  => $data,
+                'data'  => $data->items(),
             );
             
             return response()->json($result);
@@ -240,7 +254,7 @@ class TemplateController extends Controller
         ]);
         
         if ($t = $model->find($template_id)) {
-    
+            
             foreach ($request->input('data') as $d) {
                 $object_id     = $d['attributes']['object_id'];
                 $object_domain = $d['attributes']['object_domain'];
@@ -250,7 +264,7 @@ class TemplateController extends Controller
                     ->get();
                 
                 $c = $c->first();
-    
+                
                 foreach ($t->items as $i) {
                     $new_checklist_item = array(
                         'checklist_id' => $c->id,
