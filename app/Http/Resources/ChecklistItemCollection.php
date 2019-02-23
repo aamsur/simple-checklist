@@ -20,12 +20,12 @@ class ChecklistItemCollection extends JsonResource
             'attributes' => [
                 'description'  => $this->description,
                 'is_completed' => (bool) $this->is_completed,
-                'completed_at' => $this->completed_at,
+                'completed_at' => $this->updated_at ? $this->updated_at->format(\DateTime::RFC3339) : null,
                 'due'          => $this->due,
                 'urgency'      => $this->urgency,
                 'updated_by'   => $this->updated_by,
                 'created_by'   => $this->created_by,
-                'updated_at'   => $this->updated_at->format(\DateTime::RFC3339),
+                'updated_at'   => $this->updated_at ? $this->updated_at->format(\DateTime::RFC3339) : null,
                 'created_at'   => $this->created_at->format(\DateTime::RFC3339),
             ],
             'links'      => ['self' => route('checklists.detail', ['id' => $this->checklist_id])]

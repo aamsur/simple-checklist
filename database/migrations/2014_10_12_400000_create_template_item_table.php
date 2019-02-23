@@ -21,7 +21,7 @@ class CreateTemplateItemTable extends Migration
             $table->integer('urgency')->default(0);
             $table->integer('due_interval')->default(0);
             $table->string('due_unit');
-            $table->integer('updated_by');
+            $table->integer('updated_by')->nullable();
             $table->integer('created_by');
             $table->timestamp('updated_at')->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));

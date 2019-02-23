@@ -94,6 +94,7 @@ class ChecklistController extends Controller
             'data.attributes.object_domain' => 'required',
             'data.attributes.object_id'     => 'required',
             'data.attributes.description'   => 'required',
+            'data.attributes.items'         => 'required',
         ]);
         
         $data               = $request->input('data.attributes');
