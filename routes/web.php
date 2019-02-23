@@ -19,10 +19,11 @@ $router->group(['prefix' => 'api/v1/'], function () use ($router) {
     $router->get('login/', 'UsersController@authenticate');
     
     $router->group(['prefix' => 'checklists/'], function () use ($router) {
+        $router->post('templates/{template_id}/assigns', ['uses' => 'TemplateController@assign', 'as' => 'checklists.template.assign', 'where' => array('template_id' => '[0-9]+')]);
         $router->get('templates/{template_id}', ['uses' => 'TemplateController@show', 'as' => 'checklists.template.detail', 'where' => array('template_id' => '[0-9]+')]);
         $router->delete('templates/{template_id}', ['uses' => 'TemplateController@delete', 'as' => 'checklists.template.delete', 'where' => array('template_id' => '[0-9]+')]);
         $router->patch('templates/{template_id}', ['uses' => 'TemplateController@update', 'as' => 'checklists.template.update', 'where' => array('template_id' => '[0-9]+')]);
-    
+        
         $router->get('templates/', ['uses' => 'TemplateController@index', 'as' => 'checklists.template.list']);
         $router->post('templates/', ['uses' => 'TemplateController@create']);
         

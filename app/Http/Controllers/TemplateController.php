@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Checklist;
+use App\ChecklistItem;
 use App\Http\Resources\TemplateCollection;
 use App\Http\Services\Completion;
 use App\Http\Services\Templating;
@@ -218,5 +220,52 @@ class TemplateController extends Controller
         }
         
         return response()->json(['data' => $result], 200);
+    }
+    
+    /**
+     * assign template to a checklist
+     *
+     * @param  int     $template_id
+     * @param Request  $request
+     * @param Template $model
+     * @return \Illuminate\Http\Response
+     */
+    public function assign($template_id, Request $request, Template $model)
+    {
+        $this->validate($request, [
+            'data'                            => 'required',
+            'data.*.attributes'               => 'required',
+            'data.*.attributes.object_id'     => 'required',
+            'data.*.attributes.object_domain' => 'required',
+        ]);
+        
+        if ($t = $model->find($template_id)) {
+    
+            foreach ($request->input('data') as $d) {
+                $object_id     = $d['attributes']['object_id'];
+                $object_domain = $d['attributes']['object_domain'];
+                
+                $c = Checklist::where('object_id', $object_id)
+                    ->where('object_domain', $object_domain)
+                    ->get();
+                
+                $c = $c->first();
+    
+                foreach ($t->items as $i) {
+                    $new_checklist_item = array(
+                        'checklist_id' => $c->id,
+                        'description'  => $i->description,
+                        'urgency'      => $i->urgency,
+                        'created_by'   => current_user()->id,
+                    );
+                    
+                    ChecklistItem::Create($new_checklist_item);
+                }
+            }
+            
+            return response()->json(['status' => 200], 200);
+        }
+        
+        return response()->json(['status' => 404, 'error' => 'Not Found'], 404);
     }
 }
