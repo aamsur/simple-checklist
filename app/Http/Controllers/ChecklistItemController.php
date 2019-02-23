@@ -72,15 +72,19 @@ class ChecklistItemController extends Controller
             'data.attributes.description' => 'required',
         ]);
         
-        $data                 = $request->input('data.attributes');
-        $data['created_by']   = current_user()->id;
-        $data['checklist_id'] = $checklist_id;
-        
-        if ($c = $model->Create($data)) {
-            return new ChecklistItemCollection($c);
+        if ($d = Checklist::where('id', '=', $checklist_id)->first()) {
+            $data                 = $request->input('data.attributes');
+            $data['created_by']   = current_user()->id;
+            $data['checklist_id'] = $checklist_id;
+            
+            if ($c = $model->Create($data)) {
+                return new ChecklistItemCollection($c);
+            }
+            
+            return response()->json(['status' => 'fail'], 500);
         }
         
-        return response()->json(['status' => 'fail'], 500);
+        return response()->json(['status' => 404, 'error' => 'Not Found'], 404);
     }
     
     /**
